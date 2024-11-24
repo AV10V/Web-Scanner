@@ -23,27 +23,76 @@
     <div id="user-info"></div>
 
     <script>
-        // Function to gather and display user information
         function displayUserInfo() {
             const userInfoDiv = document.getElementById('user-info');
-            
-            // Gathering basic user data
+
+            // Basic browser and device info
             const userAgent = navigator.userAgent;
             const language = navigator.language || navigator.userLanguage;
+            const platform = navigator.platform;
             const screenWidth = window.screen.width;
             const screenHeight = window.screen.height;
-            const platform = navigator.platform;
+            const screenDepth = window.screen.colorDepth;
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const deviceMemory = navigator.deviceMemory || "Not Supported";
+            const battery = navigator.getBattery ? navigator.getBattery() : Promise.resolve(null);
+            
+            // Geolocation (if permission granted)
+            let geolocation = "Permission required";
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        geolocation = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+                        updateUserInfo();
+                    },
+                    error => {
+                        geolocation = "Geolocation not available or permission denied.";
+                        updateUserInfo();
+                    }
+                );
+            }
 
-            // Display the gathered information
-            userInfoDiv.innerHTML = `
-                <div class="info"><strong>Browser User-Agent:</strong> ${userAgent}</div>
-                <div class="info"><strong>Language:</strong> ${language}</div>
-                <div class="info"><strong>Screen Resolution:</strong> ${screenWidth} x ${screenHeight}</div>
-                <div class="info"><strong>Operating System:</strong> ${platform}</div>
-            `;
+            // Network information (connection type, downlink)
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            const connectionType = connection ? connection.effectiveType : "Not Supported";
+            const downlink = connection ? connection.downlink : "Not Supported";
+
+            // Display gathered data
+            function updateUserInfo() {
+                userInfoDiv.innerHTML = `
+                    <div class="info"><strong>Browser User-Agent:</strong> ${userAgent}</div>
+                    <div class="info"><strong>Language:</strong> ${language}</div>
+                    <div class="info"><strong>Platform:</strong> ${platform}</div>
+                    <div class="info"><strong>Screen Resolution:</strong> ${screenWidth} x ${screenHeight}</div>
+                    <div class="info"><strong>Screen Color Depth:</strong> ${screenDepth} bits</div>
+                    <div class="info"><strong>Timezone:</strong> ${timezone}</div>
+                    <div class="info"><strong>Device Memory:</strong> ${deviceMemory} GB</div>
+                    <div class="info"><strong>Battery Status:</strong> ${battery ? "Checking..." : "Not Supported"}</div>
+                    <div class="info"><strong>Geolocation:</strong> ${geolocation}</div>
+                    <div class="info"><strong>Connection Type:</strong> ${connectionType}</div>
+                    <div class="info"><strong>Downlink Speed:</strong> ${downlink} Mbps</div>
+                `;
+            }
+
+            // For battery status, wait until it's available
+            if (battery) {
+                battery.then(batteryInfo => {
+                    const batteryLevel = batteryInfo ? batteryInfo.level * 100 : "Not Available";
+                    const batteryCharging = batteryInfo ? (batteryInfo.charging ? "Charging" : "Not Charging") : "Not Available";
+                    userInfoDiv.innerHTML += `
+                        <div class="info"><strong>Battery Level:</strong> ${batteryLevel}%</div>
+                        <div class="info"><strong>Battery Charging Status:</strong> ${batteryCharging}</div>
+                    `;
+                });
+            }
+
+            // Update the user info display once geolocation and other data are collected
+            if (!navigator.geolocation) {
+                updateUserInfo();
+            }
         }
 
-        // Call function to display user info when the page loads
+        // Call the function to display user info when the page loads
         window.onload = displayUserInfo;
     </script>
 </body>
