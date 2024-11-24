@@ -3,30 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Info Collection</title>
+    <title>Comprehensive User Info</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            line-height: 1.5;
             text-align: center;
         }
         .hidden {
             display: none;
         }
         .container {
-            margin-top: 50px;
+            margin-top: 30px;
+            text-align: left;
+            display: inline-block;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
         }
         .info {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <!-- Email Input Prompt -->
+    <!-- Email Input Form -->
     <div id="email-prompt">
         <h2>Enter Your Email</h2>
         <form id="email-form" onsubmit="handleEmailSubmit(event)">
@@ -35,77 +41,117 @@
         </form>
     </div>
 
-    <!-- Main Content (Initially Hidden) -->
+    <!-- Main Content Section -->
     <div id="main-content" class="hidden">
         <h1 id="greeting"></h1>
         <div class="container">
             <div class="info"><strong>Your Email:</strong> <span id="email-display"></span></div>
             <div class="info"><strong>Device Type:</strong> <span id="device-type"></span></div>
-            <div class="info"><strong>Touch Support:</strong> <span id="touch-support"></span></div>
+            <div class="info"><strong>Browser Engine:</strong> <span id="browser-engine"></span></div>
+            <div class="info"><strong>Browser Name:</strong> <span id="browser-name"></span></div>
+            <div class="info"><strong>Browser Version:</strong> <span id="browser-version"></span></div>
+            <div class="info"><strong>Operating System:</strong> <span id="os"></span></div>
+            <div class="info"><strong>Screen Resolution:</strong> <span id="screen-resolution"></span></div>
+            <div class="info"><strong>Available Screen Size:</strong> <span id="available-screen-size"></span></div>
+            <div class="info"><strong>Color Depth:</strong> <span id="color-depth"></span></div>
             <div class="info"><strong>Hardware Concurrency:</strong> <span id="hardware-concurrency"></span></div>
+            <div class="info"><strong>Touch Support:</strong> <span id="touch-support"></span></div>
+            <div class="info"><strong>Max Touch Points:</strong> <span id="max-touch-points"></span></div>
             <div class="info"><strong>Cookies Enabled:</strong> <span id="cookies-enabled"></span></div>
+            <div class="info"><strong>JavaScript Enabled:</strong> <span id="javascript-enabled"></span></div>
+            <div class="info"><strong>Preferred Color Scheme:</strong> <span id="color-scheme"></span></div>
             <div class="info"><strong>Local Storage Supported:</strong> <span id="local-storage"></span></div>
             <div class="info"><strong>Session Storage Supported:</strong> <span id="session-storage"></span></div>
-            <div class="info"><strong>WebGL Supported:</strong> <span id="webgl-supported"></span></div>
-            <div class="info"><strong>Network Connection Type:</strong> <span id="network-type"></span></div>
-            <div class="info"><strong>Effective Connection Type:</strong> <span id="effective-connection-type"></span></div>
-            <div class="info"><strong>Battery Level:</strong> <span id="battery-level"></span></div>
-            <div class="info"><strong>Device Orientation:</strong> <span id="device-orientation"></span></div>
+            <div class="info"><strong>Time Zone:</strong> <span id="timezone"></span></div>
+            <div class="info"><strong>Preferred Language:</strong> <span id="language"></span></div>
+            <div class="info"><strong>Geolocation:</strong> <span id="geolocation"></span></div>
+            <div class="info"><strong>Installed Plugins:</strong> <span id="plugins"></span></div>
+            <div class="info"><strong>Available MIME Types:</strong> <span id="mime-types"></span></div>
+            <div class="info"><strong>Media Devices:</strong> <span id="media-devices"></span></div>
+            <div class="info"><strong>Connection Type:</strong> <span id="connection-type"></span></div>
+            <div class="info"><strong>Effective Bandwidth:</strong> <span id="effective-bandwidth"></span></div>
+            <div class="info"><strong>Device Memory:</strong> <span id="device-memory"></span></div>
+            <div class="info"><strong>Battery Status:</strong> <span id="battery-status"></span></div>
+            <div class="info"><strong>Do Not Track:</strong> <span id="do-not-track"></span></div>
         </div>
     </div>
 
     <script>
-        // Handle email input and display user data
-        function handleEmailSubmit(event) {
-            event.preventDefault();  // Prevent page reload
+        // Helper to check feature availability
+        const isFeatureAvailable = (feature) => typeof feature !== 'undefined' && feature !== null;
 
-            // Get email from input field
-            const userEmail = document.getElementById('user-email').value;
+        // Retrieve additional system information
+        async function retrieveSystemInfo() {
+            const systemInfo = {
+                deviceType: /Mobi/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+                browserEngine: navigator.product || 'Unknown',
+                browserName: navigator.userAgentData?.brands?.[0]?.brand || navigator.appName,
+                browserVersion: navigator.userAgentData?.brands?.[0]?.version || navigator.appVersion,
+                os: navigator.platform || 'Unknown',
+                screenResolution: `${screen.width}x${screen.height}`,
+                availableScreenSize: `${screen.availWidth}x${screen.availHeight}`,
+                colorDepth: `${screen.colorDepth}-bit`,
+                hardwareConcurrency: navigator.hardwareConcurrency || 'Unknown',
+                touchSupport: isFeatureAvailable(navigator.maxTouchPoints) ? 'Yes' : 'No',
+                maxTouchPoints: navigator.maxTouchPoints || 0,
+                cookiesEnabled: navigator.cookieEnabled ? 'Yes' : 'No',
+                javascriptEnabled: 'Yes',
+                colorScheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Dark' : 'Light',
+                localStorage: isFeatureAvailable(window.localStorage) ? 'Yes' : 'No',
+                sessionStorage: isFeatureAvailable(window.sessionStorage) ? 'Yes' : 'No',
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Unknown',
+                language: navigator.language || 'Unknown',
+                plugins: navigator.plugins.length > 0 ? Array.from(navigator.plugins).map(p => p.name).join(', ') : 'None',
+                mimeTypes: navigator.mimeTypes.length > 0 ? Array.from(navigator.mimeTypes).map(mt => mt.type).join(', ') : 'None',
+                connectionType: navigator.connection?.effectiveType || 'Unknown',
+                effectiveBandwidth: navigator.connection?.downlink || 'Unknown',
+                deviceMemory: navigator.deviceMemory || 'Unknown',
+                batteryStatus: isFeatureAvailable(navigator.getBattery)
+                    ? await navigator.getBattery().then(b => `${(b.level * 100).toFixed(0)}%`)
+                    : 'Unavailable',
+                doNotTrack: navigator.doNotTrack || 'Unknown',
+                geolocation: await getUserGeolocation(),
+                mediaDevices: await getMediaDevices()
+            };
+            return systemInfo;
+        }
 
-            // Hide the email prompt and display the main content
+        // Get geolocation
+        async function getUserGeolocation() {
+            if (!navigator.geolocation) return 'Unavailable';
+            return new Promise((resolve) =>
+                navigator.geolocation.getCurrentPosition(
+                    (position) => resolve(`Lat: ${position.coords.latitude}, Lon: ${position.coords.longitude}`),
+                    () => resolve('Permission Denied')
+                )
+            );
+        }
+
+        // Get media devices
+        async function getMediaDevices() {
+            if (!navigator.mediaDevices) return 'Unavailable';
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            return devices.map(d => d.label || d.kind).join(', ') || 'None';
+        }
+
+        // Handle email submission
+        async function handleEmailSubmit(event) {
+            event.preventDefault();
+            const email = document.getElementById('user-email').value;
+
+            // Hide email prompt and show main content
             document.getElementById('email-prompt').classList.add('hidden');
             document.getElementById('main-content').classList.remove('hidden');
 
-            // Set greeting message and display email
-            document.getElementById('greeting').textContent = `Hello, ${userEmail}!`;
-            document.getElementById('email-display').textContent = userEmail;
+            document.getElementById('email-display').textContent = email;
+            document.getElementById('greeting').textContent = `Hello, ${email}!`;
 
-            // Collect device info
-            document.getElementById('device-type').textContent = navigator.userAgent.includes("Mobile") ? "Mobile" : "Desktop";
-            document.getElementById('touch-support').textContent = 'ontouchstart' in window ? 'Yes' : 'No';
-            document.getElementById('hardware-concurrency').textContent = navigator.hardwareConcurrency;
-            document.getElementById('cookies-enabled').textContent = navigator.cookieEnabled ? 'Yes' : 'No';
-            document.getElementById('local-storage').textContent = typeof localStorage !== 'undefined' ? 'Yes' : 'No';
-            document.getElementById('session-storage').textContent = typeof sessionStorage !== 'undefined' ? 'Yes' : 'No';
-            document.getElementById('webgl-supported').textContent = !!document.createElement('canvas').getContext('webgl') ? 'Yes' : 'No';
-
-            // Network info
-            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-            if (connection) {
-                document.getElementById('network-type').textContent = connection.effectiveType || 'Unknown';
-                document.getElementById('effective-connection-type').textContent = connection.effectiveType || 'Unknown';
-            } else {
-                document.getElementById('network-type').textContent = 'Unknown';
-                document.getElementById('effective-connection-type').textContent = 'Unknown';
-            }
-
-            // Battery info (if available)
-            if (navigator.getBattery) {
-                navigator.getBattery().then(function(battery) {
-                    document.getElementById('battery-level').textContent = battery.level * 100 + "%";
-                });
-            } else {
-                document.getElementById('battery-level').textContent = "Not Available";
-            }
-
-            // Device orientation (if available)
-            if (window.DeviceOrientationEvent) {
-                window.addEventListener('deviceorientation', function(event) {
-                    document.getElementById('device-orientation').textContent = `Alpha: ${event.alpha}, Beta: ${event.beta}, Gamma: ${event.gamma}`;
-                });
-            } else {
-                document.getElementById('device-orientation').textContent = "Not Available";
-            }
+            // Populate all the details
+            const systemInfo = await retrieveSystemInfo();
+            Object.entries(systemInfo).forEach(([key, value]) => {
+                const element = document.getElementById(key);
+                if (element) element.textContent = value;
+            });
         }
     </script>
 </body>
