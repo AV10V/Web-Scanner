@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expanded User Information</title>
+    <title>User Info Collection</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,7 +26,6 @@
     </style>
 </head>
 <body>
-
     <!-- Email Input Prompt -->
     <div id="email-prompt">
         <h2>Enter Your Email</h2>
@@ -41,23 +40,22 @@
         <h1 id="greeting"></h1>
         <div class="container">
             <div class="info"><strong>Your Email:</strong> <span id="email-display"></span></div>
-            <div class="info"><strong>Browser User-Agent:</strong> <span id="user-agent"></span></div>
-            <div class="info"><strong>Browser Vendor:</strong> <span id="vendor"></span></div>
-            <div class="info"><strong>Language:</strong> <span id="language"></span></div>
-            <div class="info"><strong>Platform:</strong> <span id="platform"></span></div>
-            <div class="info"><strong>Java Enabled:</strong> <span id="java-enabled"></span></div>
-            <div class="info"><strong>Screen Resolution:</strong> <span id="screen-resolution"></span></div>
-            <div class="info"><strong>Screen Color Depth:</strong> <span id="screen-depth"></span></div>
-            <div class="info"><strong>Available Screen Resolution:</strong> <span id="screen-avail-resolution"></span></div>
-            <div class="info"><strong>Device Memory:</strong> <span id="device-memory"></span></div>
-            <div class="info"><strong>Geolocation:</strong> <span id="geolocation"></span></div>
-            <div class="info"><strong>Connection Type:</strong> <span id="connection-type"></span></div>
-            <div class="info"><strong>Downlink Speed:</strong> <span id="downlink-speed"></span></div>
-            <div class="info"><strong>Round-trip Time:</strong> <span id="rtt"></span></div>
+            <div class="info"><strong>Device Type:</strong> <span id="device-type"></span></div>
+            <div class="info"><strong>Touch Support:</strong> <span id="touch-support"></span></div>
+            <div class="info"><strong>Hardware Concurrency:</strong> <span id="hardware-concurrency"></span></div>
+            <div class="info"><strong>Cookies Enabled:</strong> <span id="cookies-enabled"></span></div>
+            <div class="info"><strong>Local Storage Supported:</strong> <span id="local-storage"></span></div>
+            <div class="info"><strong>Session Storage Supported:</strong> <span id="session-storage"></span></div>
+            <div class="info"><strong>WebGL Supported:</strong> <span id="webgl-supported"></span></div>
+            <div class="info"><strong>Network Connection Type:</strong> <span id="network-type"></span></div>
+            <div class="info"><strong>Effective Connection Type:</strong> <span id="effective-connection-type"></span></div>
+            <div class="info"><strong>Battery Level:</strong> <span id="battery-level"></span></div>
+            <div class="info"><strong>Device Orientation:</strong> <span id="device-orientation"></span></div>
         </div>
     </div>
 
     <script>
+        // Handle email input and display user data
         function handleEmailSubmit(event) {
             event.preventDefault();  // Prevent page reload
 
@@ -72,48 +70,43 @@
             document.getElementById('greeting').textContent = `Hello, ${userEmail}!`;
             document.getElementById('email-display').textContent = userEmail;
 
-            // Collect and display browser/device information
-            document.getElementById('user-agent').textContent = navigator.userAgent;
-            document.getElementById('vendor').textContent = navigator.vendor;
-            document.getElementById('language').textContent = navigator.language || navigator.userLanguage;
-            document.getElementById('platform').textContent = navigator.platform;
-            document.getElementById('java-enabled').textContent = navigator.javaEnabled();
-            document.getElementById('screen-resolution').textContent = `${window.screen.width} x ${window.screen.height}`;
-            document.getElementById('screen-depth').textContent = window.screen.colorDepth;
-            document.getElementById('screen-avail-resolution').textContent = `${window.screen.availWidth} x ${window.screen.availHeight}`;
+            // Collect device info
+            document.getElementById('device-type').textContent = navigator.userAgent.includes("Mobile") ? "Mobile" : "Desktop";
+            document.getElementById('touch-support').textContent = 'ontouchstart' in window ? 'Yes' : 'No';
+            document.getElementById('hardware-concurrency').textContent = navigator.hardwareConcurrency;
+            document.getElementById('cookies-enabled').textContent = navigator.cookieEnabled ? 'Yes' : 'No';
+            document.getElementById('local-storage').textContent = typeof localStorage !== 'undefined' ? 'Yes' : 'No';
+            document.getElementById('session-storage').textContent = typeof sessionStorage !== 'undefined' ? 'Yes' : 'No';
+            document.getElementById('webgl-supported').textContent = !!document.createElement('canvas').getContext('webgl') ? 'Yes' : 'No';
 
-            // Device Memory (if supported)
-            const deviceMemory = navigator.deviceMemory || "Not Supported";
-            document.getElementById('device-memory').textContent = deviceMemory + " GB";
-
-            // Geolocation (if permission granted)
-            let geolocation = "Permission required";
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    position => {
-                        geolocation = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
-                        document.getElementById('geolocation').textContent = geolocation;
-                    },
-                    error => {
-                        geolocation = "Geolocation not available or permission denied.";
-                        document.getElementById('geolocation').textContent = geolocation;
-                    }
-                );
+            // Network info
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (connection) {
+                document.getElementById('network-type').textContent = connection.effectiveType || 'Unknown';
+                document.getElementById('effective-connection-type').textContent = connection.effectiveType || 'Unknown';
             } else {
-                document.getElementById('geolocation').textContent = geolocation;
+                document.getElementById('network-type').textContent = 'Unknown';
+                document.getElementById('effective-connection-type').textContent = 'Unknown';
             }
 
-            // Network Information
-            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-            const connectionType = connection ? connection.effectiveType : "Not Supported";
-            const downlink = connection ? connection.downlink : "Not Supported";
-            const rtt = connection ? connection.rtt : "Not Supported";
+            // Battery info (if available)
+            if (navigator.getBattery) {
+                navigator.getBattery().then(function(battery) {
+                    document.getElementById('battery-level').textContent = battery.level * 100 + "%";
+                });
+            } else {
+                document.getElementById('battery-level').textContent = "Not Available";
+            }
 
-            document.getElementById('connection-type').textContent = connectionType;
-            document.getElementById('downlink-speed').textContent = downlink + " Mbps";
-            document.getElementById('rtt').textContent = rtt + " ms";
+            // Device orientation (if available)
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', function(event) {
+                    document.getElementById('device-orientation').textContent = `Alpha: ${event.alpha}, Beta: ${event.beta}, Gamma: ${event.gamma}`;
+                });
+            } else {
+                document.getElementById('device-orientation').textContent = "Not Available";
+            }
         }
     </script>
-
 </body>
 </html>
