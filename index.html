@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Information</title>
+    <title>Expanded User Information</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,24 +19,32 @@
     </style>
 </head>
 <body>
-    <h1>User Information</h1>
+    <h1>Expanded User Information</h1>
     <div id="user-info"></div>
 
     <script>
         function displayUserInfo() {
             const userInfoDiv = document.getElementById('user-info');
 
-            // Basic browser and device info
+            // Browser Information
             const userAgent = navigator.userAgent;
+            const vendor = navigator.vendor;
             const language = navigator.language || navigator.userLanguage;
             const platform = navigator.platform;
+            const javaEnabled = navigator.javaEnabled();
             const screenWidth = window.screen.width;
             const screenHeight = window.screen.height;
             const screenDepth = window.screen.colorDepth;
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const screenAvailWidth = window.screen.availWidth;
+            const screenAvailHeight = window.screen.availHeight;
+            const screenOrientation = window.screen.orientation ? window.screen.orientation.type : "Not Supported";
+
+            // Device Memory (if supported)
             const deviceMemory = navigator.deviceMemory || "Not Supported";
+
+            // Battery Status (if supported)
             const battery = navigator.getBattery ? navigator.getBattery() : Promise.resolve(null);
-            
+
             // Geolocation (if permission granted)
             let geolocation = "Permission required";
             if (navigator.geolocation) {
@@ -52,25 +60,29 @@
                 );
             }
 
-            // Network information (connection type, downlink)
+            // Network Information
             const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             const connectionType = connection ? connection.effectiveType : "Not Supported";
             const downlink = connection ? connection.downlink : "Not Supported";
+            const rtt = connection ? connection.rtt : "Not Supported";
 
             // Display gathered data
             function updateUserInfo() {
                 userInfoDiv.innerHTML = `
                     <div class="info"><strong>Browser User-Agent:</strong> ${userAgent}</div>
+                    <div class="info"><strong>Browser Vendor:</strong> ${vendor}</div>
                     <div class="info"><strong>Language:</strong> ${language}</div>
                     <div class="info"><strong>Platform:</strong> ${platform}</div>
+                    <div class="info"><strong>Java Enabled:</strong> ${javaEnabled}</div>
                     <div class="info"><strong>Screen Resolution:</strong> ${screenWidth} x ${screenHeight}</div>
                     <div class="info"><strong>Screen Color Depth:</strong> ${screenDepth} bits</div>
-                    <div class="info"><strong>Timezone:</strong> ${timezone}</div>
+                    <div class="info"><strong>Available Screen Resolution:</strong> ${screenAvailWidth} x ${screenAvailHeight}</div>
+                    <div class="info"><strong>Screen Orientation:</strong> ${screenOrientation}</div>
                     <div class="info"><strong>Device Memory:</strong> ${deviceMemory} GB</div>
-                    <div class="info"><strong>Battery Status:</strong> ${battery ? "Checking..." : "Not Supported"}</div>
                     <div class="info"><strong>Geolocation:</strong> ${geolocation}</div>
                     <div class="info"><strong>Connection Type:</strong> ${connectionType}</div>
                     <div class="info"><strong>Downlink Speed:</strong> ${downlink} Mbps</div>
+                    <div class="info"><strong>Round-trip Time:</strong> ${rtt} ms</div>
                 `;
             }
 
