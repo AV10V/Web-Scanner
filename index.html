@@ -3,26 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Info Page</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <title>User Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .info {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 <body>
     <h1>User Information</h1>
-    <div id="content"></div>
+    <div id="user-info"></div>
 
     <script>
-        // Fetch the raw markdown file from GitHub
-        fetch('https://raw.githubusercontent.com/username/repository/main/index.md')
-            .then(response => response.text())
-            .then(markdown => {
-                // Convert markdown to HTML
-                const htmlContent = marked(markdown);
-                // Insert the HTML into the page
-                document.getElementById('content').innerHTML = htmlContent;
-            })
-            .catch(error => {
-                console.error('Error fetching markdown file:', error);
-            });
+        // Function to gather and display user information
+        function displayUserInfo() {
+            const userInfoDiv = document.getElementById('user-info');
+            
+            // Gathering basic user data
+            const userAgent = navigator.userAgent;
+            const language = navigator.language || navigator.userLanguage;
+            const screenWidth = window.screen.width;
+            const screenHeight = window.screen.height;
+            const platform = navigator.platform;
+
+            // Display the gathered information
+            userInfoDiv.innerHTML = `
+                <div class="info"><strong>Browser User-Agent:</strong> ${userAgent}</div>
+                <div class="info"><strong>Language:</strong> ${language}</div>
+                <div class="info"><strong>Screen Resolution:</strong> ${screenWidth} x ${screenHeight}</div>
+                <div class="info"><strong>Operating System:</strong> ${platform}</div>
+            `;
+        }
+
+        // Call function to display user info when the page loads
+        window.onload = displayUserInfo;
     </script>
 </body>
 </html>
