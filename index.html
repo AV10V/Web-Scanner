@@ -8,9 +8,16 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+        .container {
+            margin-top: 50px;
         }
         .info {
-            margin: 10px 0;
+            margin-top: 20px;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -19,31 +26,65 @@
     </style>
 </head>
 <body>
-    <h1>Expanded User Information</h1>
-    <div id="user-info"></div>
+
+    <!-- Email Input Prompt -->
+    <div id="email-prompt">
+        <h2>Enter Your Email</h2>
+        <form id="email-form" onsubmit="handleEmailSubmit(event)">
+            <input type="email" id="user-email" placeholder="Your Email" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Main Content (Initially Hidden) -->
+    <div id="main-content" class="hidden">
+        <h1 id="greeting"></h1>
+        <div class="container">
+            <div class="info"><strong>Your Email:</strong> <span id="email-display"></span></div>
+            <div class="info"><strong>Browser User-Agent:</strong> <span id="user-agent"></span></div>
+            <div class="info"><strong>Browser Vendor:</strong> <span id="vendor"></span></div>
+            <div class="info"><strong>Language:</strong> <span id="language"></span></div>
+            <div class="info"><strong>Platform:</strong> <span id="platform"></span></div>
+            <div class="info"><strong>Java Enabled:</strong> <span id="java-enabled"></span></div>
+            <div class="info"><strong>Screen Resolution:</strong> <span id="screen-resolution"></span></div>
+            <div class="info"><strong>Screen Color Depth:</strong> <span id="screen-depth"></span></div>
+            <div class="info"><strong>Available Screen Resolution:</strong> <span id="screen-avail-resolution"></span></div>
+            <div class="info"><strong>Device Memory:</strong> <span id="device-memory"></span></div>
+            <div class="info"><strong>Geolocation:</strong> <span id="geolocation"></span></div>
+            <div class="info"><strong>Connection Type:</strong> <span id="connection-type"></span></div>
+            <div class="info"><strong>Downlink Speed:</strong> <span id="downlink-speed"></span></div>
+            <div class="info"><strong>Round-trip Time:</strong> <span id="rtt"></span></div>
+        </div>
+    </div>
 
     <script>
-        function displayUserInfo() {
-            const userInfoDiv = document.getElementById('user-info');
+        function handleEmailSubmit(event) {
+            event.preventDefault();  // Prevent page reload
 
-            // Browser Information
-            const userAgent = navigator.userAgent;
-            const vendor = navigator.vendor;
-            const language = navigator.language || navigator.userLanguage;
-            const platform = navigator.platform;
-            const javaEnabled = navigator.javaEnabled();
-            const screenWidth = window.screen.width;
-            const screenHeight = window.screen.height;
-            const screenDepth = window.screen.colorDepth;
-            const screenAvailWidth = window.screen.availWidth;
-            const screenAvailHeight = window.screen.availHeight;
-            const screenOrientation = window.screen.orientation ? window.screen.orientation.type : "Not Supported";
+            // Get email from input field
+            const userEmail = document.getElementById('user-email').value;
+
+            // Hide the email prompt and display the main content
+            document.getElementById('email-prompt').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+
+            // Set greeting message and display email
+            document.getElementById('greeting').textContent = `Hello, ${userEmail}!`;
+            document.getElementById('email-display').textContent = userEmail;
+
+            // Collect and display browser/device information
+            document.getElementById('user-agent').textContent = navigator.userAgent;
+            document.getElementById('vendor').textContent = navigator.vendor;
+            document.getElementById('language').textContent = navigator.language || navigator.userLanguage;
+            document.getElementById('platform').textContent = navigator.platform;
+            document.getElementById('java-enabled').textContent = navigator.javaEnabled();
+            document.getElementById('screen-resolution').textContent = `${window.screen.width} x ${window.screen.height}`;
+            document.getElementById('screen-depth').textContent = window.screen.colorDepth;
+            document.getElementById('screen-avail-resolution').textContent = `${window.screen.availWidth} x ${window.screen.availHeight}`;
 
             // Device Memory (if supported)
             const deviceMemory = navigator.deviceMemory || "Not Supported";
-
-            // Battery Status (if supported)
-            const battery = navigator.getBattery ? navigator.getBattery() : Promise.resolve(null);
+            document.getElementById('device-memory').textContent = deviceMemory + " GB";
 
             // Geolocation (if permission granted)
             let geolocation = "Permission required";
@@ -51,13 +92,15 @@
                 navigator.geolocation.getCurrentPosition(
                     position => {
                         geolocation = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
-                        updateUserInfo();
+                        document.getElementById('geolocation').textContent = geolocation;
                     },
                     error => {
                         geolocation = "Geolocation not available or permission denied.";
-                        updateUserInfo();
+                        document.getElementById('geolocation').textContent = geolocation;
                     }
                 );
+            } else {
+                document.getElementById('geolocation').textContent = geolocation;
             }
 
             // Network Information
@@ -66,46 +109,11 @@
             const downlink = connection ? connection.downlink : "Not Supported";
             const rtt = connection ? connection.rtt : "Not Supported";
 
-            // Display gathered data
-            function updateUserInfo() {
-                userInfoDiv.innerHTML = `
-                    <div class="info"><strong>Browser User-Agent:</strong> ${userAgent}</div>
-                    <div class="info"><strong>Browser Vendor:</strong> ${vendor}</div>
-                    <div class="info"><strong>Language:</strong> ${language}</div>
-                    <div class="info"><strong>Platform:</strong> ${platform}</div>
-                    <div class="info"><strong>Java Enabled:</strong> ${javaEnabled}</div>
-                    <div class="info"><strong>Screen Resolution:</strong> ${screenWidth} x ${screenHeight}</div>
-                    <div class="info"><strong>Screen Color Depth:</strong> ${screenDepth} bits</div>
-                    <div class="info"><strong>Available Screen Resolution:</strong> ${screenAvailWidth} x ${screenAvailHeight}</div>
-                    <div class="info"><strong>Screen Orientation:</strong> ${screenOrientation}</div>
-                    <div class="info"><strong>Device Memory:</strong> ${deviceMemory} GB</div>
-                    <div class="info"><strong>Geolocation:</strong> ${geolocation}</div>
-                    <div class="info"><strong>Connection Type:</strong> ${connectionType}</div>
-                    <div class="info"><strong>Downlink Speed:</strong> ${downlink} Mbps</div>
-                    <div class="info"><strong>Round-trip Time:</strong> ${rtt} ms</div>
-                `;
-            }
-
-            // For battery status, wait until it's available
-            if (battery) {
-                battery.then(batteryInfo => {
-                    const batteryLevel = batteryInfo ? batteryInfo.level * 100 : "Not Available";
-                    const batteryCharging = batteryInfo ? (batteryInfo.charging ? "Charging" : "Not Charging") : "Not Available";
-                    userInfoDiv.innerHTML += `
-                        <div class="info"><strong>Battery Level:</strong> ${batteryLevel}%</div>
-                        <div class="info"><strong>Battery Charging Status:</strong> ${batteryCharging}</div>
-                    `;
-                });
-            }
-
-            // Update the user info display once geolocation and other data are collected
-            if (!navigator.geolocation) {
-                updateUserInfo();
-            }
+            document.getElementById('connection-type').textContent = connectionType;
+            document.getElementById('downlink-speed').textContent = downlink + " Mbps";
+            document.getElementById('rtt').textContent = rtt + " ms";
         }
-
-        // Call the function to display user info when the page loads
-        window.onload = displayUserInfo;
     </script>
+
 </body>
 </html>
